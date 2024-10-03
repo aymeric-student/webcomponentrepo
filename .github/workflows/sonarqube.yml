@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read  # Permet à SonarQube de décorer les PRs avec les résultats de l'analyse.
+  pull-requests: read
 
 jobs:
   Analysis:
@@ -27,21 +27,20 @@ jobs:
         run: npm install
 
       - name: Run tests and generate coverage report
-        run: npm test -- --coverage
+        run: ng test --code-coverage --watch=false
 
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v1.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Nécessaire pour obtenir les informations des PRs
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Le token généré dans SonarQube, ajouté aux secrets du dépôt
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # URL de votre instance SonarQube, ajoutée aux secrets du dépôt
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: |
-            -Dsonar.projectKey=webcomponentrepo   # Remplacez par la clé de votre projet SonarQube
-            -Dsonar.sources=src             # Chemin vers le dossier des sources (exemple : "src" pour Angular)
-            -Dsonar.exclusions=**/node_modules/**,src/assets/**  # Exclusions
-            -Dsonar.tests=src               # Chemin vers le dossier des tests
-            -Dsonar.test.inclusions=**/*.spec.ts  # Inclure tous les fichiers de test TypeScript
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  # Chemin vers le fichier de couverture généré
-            -Dsonar.sourceEncoding=UTF-8    # Encodage des fichiers sources
-
+            -Dsonar.projectKey=webcomponentrepo
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/node_modules/**,src/assets/**
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.sourceEncoding=UTF-8
