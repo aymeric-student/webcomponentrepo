@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read
+  pull-requests: read  # Permet à SonarQube de décorer les PRs avec les résultats de l'analyse.
 
 jobs:
   Analysis:
@@ -26,15 +26,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli
+
       - name: Run tests and generate coverage report
         run: ng test --code-coverage --watch=false
 
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v1.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Nécessaire pour obtenir les informations des PRs
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Le token généré dans SonarQube, ajouté aux secrets du dépôt
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # URL de votre instance SonarQube, ajoutée aux secrets du dépôt
         with:
           args: |
             -Dsonar.projectKey=webcomponentrepo
